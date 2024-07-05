@@ -42,3 +42,7 @@ Snap 은 의존성을 미리 포함하고, 실행 환경이 격리되어 있어 
 ## Snap 과 컨테이너 비교
 
 - Snap 과 컨테이너는 프로그램 실행에 필요한 의존성을 번들링 하고, 격리된 환경에서 실행되고, 대부분의 리눅스 배포판에서 동일하게 실행 가능한 점에서 상당히 유사합니다.
+- 하지만 컨테이너가 호스트와 따로 IP 주소와 계정도 따로 가진 별개의 환경에서 실행 되는 것이라면, Snap 은 격리된 환경에서 돌아가지만 호스트 시스템에서 바로 실행해서 사용 가능하도록 하는것이 다릅니다. 예를 들어 MySQL 서버를 컨테이너로 실행하면, 먼저 컨테이너를 구동 시키고 그 내부에서 MySQL 서버 프로세스를 실행하지만. Snap 으로 설치하면 컨테이너와 같은 별도 환경을 구동 시키는 것이 아니라 MySQL 을 호스트 시스템에서 바로 실행하는 것입니다. 대신 실행에 필요한 의존성은 Snap 패키지 내부의 것을 활용하게 됩니다.
+
+![](./snap-and-container.png)
+> VM, Machine Container(System Container), Process Container(Application Container), Snap 비교 (출처: https://www.youtube.com/watch?v=0z3yusiCOCk)
