@@ -94,3 +94,84 @@ sudo snap install --channel=edge firefox
 ```bash
 sudo snap switch --channel=stable firefox
 ```
+
+## 업데이트, 이전 버전으로 복구
+
+패키지를 업데이트 하려면 `refresh` 를 사용합니다.
+```bash
+sudo snap refresh firefox
+```
+
+Snap 은 기본적으로 자동 업데이트 이므로, 업데이트를 지연시키는 것도 가능합니다. `--hold` 를 이용하면 됩니다.
+```bash
+snap refresh --hold=24h firefox
+```
+
+Snap의 트랜젝션 업데이트 덕에 업데이트 한 버전을 이전 버전으로 되돌리는 것 또한 가능합니다. `revert` 로 직전 버전이나 특정 버전으로 되돌리기가 가능합니다.
+```bash
+sudo snap revert firefox
+```
+
+특정 revision 으로 되돌리려면 `--revision` 옵션을 사용합니다.
+```bash
+snap revert firefox --revision 4480
+```
+
+## 인터페이스 연결 관리
+Snap 에서 제공하는 인터페이스 기능으로 시스템 자원 접근을 허용 하거나 제한 해 봅니다.
+
+먼저 `connections` 명령으로 패키지에 연결된 인터페이스를 조회 해 봅니다.
+```bash
+~$ snap connections firefox
+Interface               Plug                            Slot                            Notes
+alsa                    firefox:alsa                    -                               -
+audio-playback          firefox:audio-playback          :audio-playback                 -
+audio-record            firefox:audio-record            :audio-record                   -
+avahi-observe           firefox:avahi-observe           :avahi-observe                  -
+browser-support         firefox:browser-sandbox         :browser-support                -
+camera                  firefox:camera                  :camera                         -
+content[gnome-42-2204]  firefox:gnome-42-2204           gnome-42-2204:gnome-42-2204     -
+content[gtk-3-themes]   firefox:gtk-3-themes            gtk-common-themes:gtk-3-themes  -
+content[icon-themes]    firefox:icon-themes             gtk-common-themes:icon-themes   -
+content[sound-themes]   firefox:sound-themes            gtk-common-themes:sound-themes  -
+cups-control            firefox:cups-control            :cups-control                   -
+dbus                    -                               firefox:dbus-daemon             -
+desktop                 firefox:desktop                 :desktop                        -
+desktop-legacy          firefox:desktop-legacy          :desktop-legacy                 -
+gsettings               firefox:gsettings               :gsettings                      -
+hardware-observe        firefox:hardware-observe        :hardware-observe               -
+home                    firefox:home                    :home                           -
+joystick                firefox:joystick                :joystick                       -
+login-session-observe   firefox:login-session-observe   :login-session-observe          -
+mount-control           firefox:host-hunspell           :mount-control                  -
+mpris                   -                               firefox:mpris                   -
+network                 firefox:network                 :network                        -
+network-bind            firefox:network-bind            :network-bind                   -
+network-observe         firefox:network-observe         -                               -
+opengl                  firefox:opengl                  :opengl                         -
+personal-files          firefox:dot-mozilla-firefox     :personal-files                 -
+removable-media         firefox:removable-media         :removable-media                -
+screen-inhibit-control  firefox:screen-inhibit-control  :screen-inhibit-control         -
+system-files            firefox:etc-firefox             :system-files                   -
+system-packages-doc     firefox:system-packages-doc     :system-packages-doc            -
+u2f-devices             firefox:u2f-devices             :u2f-devices                    -
+unity7                  firefox:unity7                  :unity7                         -
+upower-observe          firefox:upower-observe          :upower-observe                 -
+wayland                 firefox:wayland                 :wayland                        -
+x11                     firefox:x11                     :x11                            -
+~$ 
+```
+
+`connect` 와 `disconnect`로 인터페이스 연결/해제가 가능합니다. 여기서는 `firefox` 패키지에 대해 `wayland` 인터페이스를 연결/해제 해 보고 테스트 해 보겠습니다.
+
+먼저 `wayland` 인터페이스 연결 해제 후 `firefox`를 실행 해 봅니다. Wayland 사용하는 데스크톱 이라면 이제 Wayland 접근이 불가하여 앱 실행이 불가 한 것을 확인할 수 있습니다.
+```bash
+sudo snap disconnect firefox:wayland
+firefox
+```
+
+다시 연결 후 실행하면, 앱이 정상적으로 실행되는 것을 볼 수 있습니다.
+```bash
+sudo snap connect firefox:wayland
+firefox
+```
