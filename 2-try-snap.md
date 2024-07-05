@@ -7,7 +7,7 @@ Ubuntu의 경우 보통 Snapd 는 이미 설치되어 있습니다. 사용중인
 
 https://snapcraft.io/docs/installing-snapd
 
-## 패키지 설치 및 실행 해 보기
+## 패키지 검색
 
 먼저 로컬에 설치된 Snap 패키지를 조회 해 봅시다.
 
@@ -42,4 +42,55 @@ snap find "web browser"
 > 카테고리 목록: https://snapcraft.io/docs/quickstart-tour#section-categories
 ```bash
 snap find firefox --section=productivity
+```
+
+패키지에 대한 세부 정보를 보려면 `snap info`를 이용할 수 있습니다.
+
+```bash
+~$ snap info firefox
+name:      firefox
+summary:   Mozilla Firefox web browser
+publisher: Mozilla✓
+store-url: https://snapcraft.io/firefox
+contact:   https://support.mozilla.org/kb/file-bug-report-or-feature-request-mozilla
+license:   unset
+description: |
+  Firefox is a powerful, extensible web browser with support for modern web application
+  technologies.
+commands:
+  - firefox
+  - firefox.geckodriver
+snap-id:      3wdHCAVyZEmYsCMFDE9qt92UV8rC8Wdk
+tracking:     latest/stable/ubuntu-24.04
+refresh-date: 7 days ago, at 19:19 KST
+channels:
+  latest/stable:    127.0.2-1     2024-06-26 (4483) 281MB -
+  latest/candidate: 128.0-2       2024-07-04 (4539) 280MB -
+  latest/beta:      128.0b9-1     2024-06-28 (4502) 280MB -
+  latest/edge:      129.0a1       2024-07-05 (4542) 300MB -
+  esr/stable:       115.12.0esr-1 2024-06-11 (4373) 256MB -
+  esr/candidate:    115.13.0esr-3 2024-07-04 (4532) 256MB -
+  esr/beta:         ↑                                     
+  esr/edge:         ↑                                     
+installed:          127.0.2-1                (4483) 281MB -
+~$ 
+```
+
+## 패키지 설치
+
+설치 하려면 다른 패키지 관리자 처럼 `snap install`을 이용 합니다.
+
+```bash
+sudo snap install firefox
+```
+
+Snap에는 채널(Channel)기능이 있는데, 이를 통해 출시 후보나 테스트 단계의 패키지도 배포가 가능하고 선택적으로 설치가 가능합니다.
+예를 들어 개발 단계의 버전을 이용 해 보려면 `edge` 채널을 이용 하는데, 아래와 같이 `--channel`옵션을 이용하면 됩니다.
+```bash
+sudo snap install --channel=edge firefox
+```
+
+설치 후 채널을 변경하려면 `switch`를 이용합니다.
+```bash
+sudo snap switch --channel=stable firefox
 ```
