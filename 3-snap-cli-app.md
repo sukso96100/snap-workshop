@@ -204,3 +204,57 @@ parts:
       stack update
       stack build
 ```
+
+마지막으로 빌드한 파일을 설치하는 명령도 넣어 주는데, 경로를 지정해서 빌드 환경이 아닌 패키지 될 파일 경로로 지정해 주어야 합니다.
+이때 Snapcraft 빌드 환경에서 생성되는 환경 변수인 `CRAFT_PART_INSTALL` 를 사용할 수 있습니다. `CRAFT_PART_INSTALL`는 빌드 단계에서 나온 결과물을 보관할 경로로, 여기에 저장된 파일이 추후 패키지에 포함 됩니다.
+
+이렇게 빌드 중 생성되는 Snapcraft 환경변수 정보는 https://snapcraft.io/docs/parts-environment-variables 에서 자세히 확인 가능합니다.
+
+```yaml
+parts:
+  hledger:
+    # See 'snapcraft plugins'
+    plugin: nil # 플러그인 없음
+    source: https://github.com/simonmichael/hledger # hledger git 저장소에서 소스 가져오기
+    source-tag: "1.34" # 빌드할 Git Tag 지정
+    source-type: git # 소스 유형 지정
+    build-environment:
+    - PATH: "/root/.local/bin:$PATH" # PATH 설정
+    build-packages: # 빌드할 떄 필요한 의존성
+    - libgmp-dev 
+    - libtinfo-dev 
+    - zlib1g-dev
+    - curl # Stack 설치 시 curl 필요하므로 추가
+    override-build: | 
+      curl -sSL https://get.haskellstack.org/ | sh # Stack 설치
+      stack update
+      stack build
+      stack install --local-bin-path $CRAFT_PART_INSTALL/bin/
+```
+
+### apps 정의하기
+빌드 방법을 정의 했다면, 이제 패키지에 어떤 프로그램이 있고 어떻게 실행해야 하는지 정의해 주어야 합니다. 이 작업은 `apps` 섹션에서 지정하게 됩니다.
+
+아래와 같이 지정할 수 있는데요, `apps` 섹션 아래에 프로그램 실행 시 어떤 명령으로 실행 되어야 하는지 이름을 정의하고, 실행할 파일 등을 지정하는 형태 입니다.
+여기서는 우선, `bin/hledger`를 `hledger` 라는 명령으로 실행 되도록 지정합시다. 아래처럼 작성할 수 있습니다.
+
+```yaml
+apps:
+  hledger:
+    command: bin/hledger
+```
+
+이렇게 지정한 apps 아래 항목의 이름이 패키지 이름과 일치하면, 추후 패키징 한 것을 설치 했을 떄 해당 이름 만으로 명령을 실행 할 수 있게 됩니다. 예를 들어 여기서는 apps 아래 hledger 가 패키지 이름인 hledger 와 일치하므로, 설치 후 `hledger` 명령으로 실행할 수 있습니다.
+
+패키지에 포함된 프로그램이 더 있다면 추가로 지정할 수 있습니다. `hledger`의 경우, `hledger-ui`, `hledger-web`도 있는데, 아래와 같이 추가할 수 있습니다.
+
+```yaml
+apps:
+  hledger:
+    command: bin/hledger
+  ui:
+    command: bin/hledger-ui
+  web:
+    command: bin/hledger-web
+```
+이렇게 추가한 항목은 패키지 이름과 일치하지 않기 떄문에 `<패키지 이름>.<App 이름>` 형식으로 실행하게 됩니다. 예를 들어 `hledger.ui` 혹은 `hledger.web` 명령으로 실행하게 되는 것 입니다.
