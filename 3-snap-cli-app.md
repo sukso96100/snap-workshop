@@ -258,3 +258,12 @@ apps:
     command: bin/hledger-web
 ```
 이렇게 추가한 항목은 패키지 이름과 일치하지 않기 떄문에 `<패키지 이름>.<App 이름>` 형식으로 실행하게 됩니다. 예를 들어 `hledger.ui` 혹은 `hledger.web` 명령으로 실행하게 되는 것 입니다.
+
+### 빌드, 설치, 실행 해보기
+
+패키지의 기본적인 부분은 어느정도 작성이 되었는데요. 이제 빌드하고 설치하여 실행 해 보겠습니다. 아래 명령을 순서대로 실행 해 보세요.
+
+```yaml
+snapcraft
+sudo snap install --dangerous --devmode <패키지 파일 이름>.snap
+```
