@@ -124,3 +124,83 @@ parts:
     source-tag: "1.34" # 빌드할 Git Tag 지정
     source-type: git # 소스 유형 지정
 ```
+
+그 다음으로는 빌드 방법을 정의 해 줍시다. 먼저 빌드에 필요한 의존성 패키지를 정의 해 줍니다. hledger 문서에 의하면, Ubuntu 환경에서 빌드 할 때는 `libgmp-dev`, `libtinfo-dev`, `zlib1g-dev` 가 요구 되는데, 아래와 같이 `build-packages` 부분에 정의할 수 있습니다.
+
+```yaml
+parts:
+  hledger:
+    # See 'snapcraft plugins'
+    plugin: nil # 플러그인 없음
+    source: https://github.com/simonmichael/hledger # hledger git 저장소에서 소스 가져오기
+    source-tag: "1.34" # 빌드할 Git Tag 지정
+    source-type: git # 소스 유형 지정
+    build-packages: # 빌드할 떄 필요한 의존성
+    - libgmp-dev 
+    - libtinfo-dev 
+    - zlib1g-dev
+```
+
+이 워크샵에서는 Haskell 의 Stack 이라는 도구로 빌드를 할 것인데, 이 도구는 현재 우분투 main 저장소에서 패키지로 제공되지 않습니다. 그래서 빌드 단계에서 별도 스크립트로 설치 되도록 할 것입니다. 이를 위해 build 과정에서 실행되는 명령을 `override-build` 로 재정의 합니다.
+
+```yaml
+parts:
+  hledger:
+    # See 'snapcraft plugins'
+    plugin: nil # 플러그인 없음
+    source: https://github.com/simonmichael/hledger # hledger git 저장소에서 소스 가져오기
+    source-tag: "1.34" # 빌드할 Git Tag 지정
+    source-type: git # 소스 유형 지정
+    build-packages: # 빌드할 떄 필요한 의존성
+    - libgmp-dev 
+    - libtinfo-dev 
+    - zlib1g-dev
+    - curl # Stack 설치 시 curl 필요하므로 추가
+    override-build: | 
+      curl -sSL https://get.haskellstack.org/ | sh # Stack 설치
+    
+```
+Stack 에서는 빌드한 프로그램을 `/root/local/.bin` 에 설치 하는데, Haskell 앱 빌드에 필요한 GHC 등도 없으면 이 경로에 설치 하므로 `PATH` 환경변수를 설정 해 주어야 합니다.
+아래처럼 `build-environment` 를 활용해 설정할 수 있습니다. 
+
+```yaml
+parts:
+  hledger:
+    # See 'snapcraft plugins'
+    plugin: nil # 플러그인 없음
+    source: https://github.com/simonmichael/hledger # hledger git 저장소에서 소스 가져오기
+    source-tag: "1.34" # 빌드할 Git Tag 지정
+    source-type: git # 소스 유형 지정
+    build-environment:
+    - PATH: "/root/.local/bin:$PATH" # PATH 설정
+    build-packages: # 빌드할 떄 필요한 의존성
+    - libgmp-dev 
+    - libtinfo-dev 
+    - zlib1g-dev
+    - curl # Stack 설치 시 curl 필요하므로 추가
+    override-build: | 
+      curl -sSL https://get.haskellstack.org/ | sh # Stack 설치
+```
+
+빌드에 필요한 명령도 넣어 줍니다.
+
+```yaml
+parts:
+  hledger:
+    # See 'snapcraft plugins'
+    plugin: nil # 플러그인 없음
+    source: https://github.com/simonmichael/hledger # hledger git 저장소에서 소스 가져오기
+    source-tag: "1.34" # 빌드할 Git Tag 지정
+    source-type: git # 소스 유형 지정
+    build-environment:
+    - PATH: "/root/.local/bin:$PATH" # PATH 설정
+    build-packages: # 빌드할 떄 필요한 의존성
+    - libgmp-dev 
+    - libtinfo-dev 
+    - zlib1g-dev
+    - curl # Stack 설치 시 curl 필요하므로 추가
+    override-build: | 
+      curl -sSL https://get.haskellstack.org/ | sh # Stack 설치
+      stack update
+      stack build
+```
