@@ -267,3 +267,12 @@ apps:
 snapcraft
 sudo snap install --dangerous --devmode <패키지 파일 이름>.snap
 ```
+
+Launchpad build firm 을 활용하여 원격 환경에서 빌드 하려면 `remote-build` 를 사용할 수 있습니다 (Launchpad 계정 필요)
+```yaml
+snapcraft remote-build
+```
+
+설치 후, `hledger`를 실행해서 정상적으로 실행 가능한지 확인 해 보세요
+
+### Confinement 수정 및 Interface 지정
